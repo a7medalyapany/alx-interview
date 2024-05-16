@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+'''0-stats Task'''
+
+
 import sys
 import signal
 
