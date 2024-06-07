@@ -2,41 +2,50 @@
 
 const request = require('request');
 const movieId = process.argv[2];
-const url = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
 
-if (!movieId) {
-  console.error('Please provide a Movie ID as the first argument.');
-  process.exit(1);
+function getMovieCharacters(movieId) {
+  const filmsUrl = 'https://swapi-api.alx-tools.com/api/films';
+
+  request.get(filmsUrl, (error, response, body) => {
+    if (response.statusCode === 200) {
+      const filmsData = JSON.parse(body);
+      const movieData = filmsData.results.find((film) => film.episode_id.toString() === movieId);
+
+      if (movieData) {
+        const charactersUrls = movieData.characters;
+        const characters = [];
+
+        for (const charUrl of charactersUrls) {
+          request.get(charUrl, (error, response, body) => {
+            if (response.statusCode === 200) {
+              const characterData = JSON.parse(body);
+              characters.push(characterData.name);
+              if (characters.length === charactersUrls.length) {
+                printCharacters(characters, movieData.title);
+              }
+            } else {
+              console.log(`Error: ${response.statusCode}`);
+            }
+          });
+        }
+      } else {
+        console.log(`Movie ID ${movieId} not found.`);
+      }
+    } else {
+      console.log(`Error: ${response.statusCode}`);
+    }
+  });
 }
 
-request(url, function (error, response, body) {
-  if (error) {
-    console.error('Error making the request:', error);
-    return;
+function printCharacters(characters, movieTitle) {
+  console.log(`Characters in ${movieTitle}:`);
+  for (const character of characters) {
+    console.log(character);
   }
+}
 
-  if (response.statusCode !== 200) {
-    console.error('Failed to fetch the movie. Status code:', response.statusCode);
-    return;
-  }
-
-  const film = JSON.parse(body);
-  const characters = film.characters;
-
-  characters.forEach(characterUrl => {
-    request(characterUrl, function (charError, charResponse, charBody) {
-      if (charError) {
-        console.error('Error fetching character:', charError);
-        return;
-      }
-
-      if (charResponse.statusCode !== 200) {
-        console.error('Failed to fetch character. Status code:', charResponse.statusCode);
-        return;
-      }
-
-      const character = JSON.parse(charBody);
-      console.log(character.name);
-    });
-  });
-});
+if (movieId) {
+  getMovieCharacters(movieId);
+} else {
+  console.log('Usage: node 0-starwars_characters.js [Movie ID]');
+}
