@@ -1,20 +1,28 @@
-def makeChange(coins, total):
-    if total < 0:
-        return -1
-    
-    # Initialize dp array with infinity (float('inf'))
-    dp = [float('inf')] * (total + 1)
-    dp[0] = 0  # 0 coins are needed to make amount 0
-    
-    # Calculate minimum coins required for each amount from 1 to total
-    for i in range(1, total + 1):
-        for coin in coins:
-            if i >= coin:
-                dp[i] = min(dp[i], dp[i - coin] + 1)
-    
-    # If dp[total] is still infinity, total cannot be formed
-    return dp[total] if dp[total] != float('inf') else -1
+#!/usr/bin/python3
+"""Making Change"""
 
-# Testing the function with given examples
-print(makeChange([1, 2, 25], 37))   # Output: 7
-print(makeChange([1256, 54, 48, 16, 102], 1453))   # Output: -1
+
+def makeChange(coins, total):
+    """
+    Determines the fewest number of coins needed to meet a given amount total
+    Args:
+        coins: list of integers representing coin values
+        total: total amount of change needed
+    Return: 0 if total is 0 or less
+            -1 if total cannot be met by any number of coins
+            fewest number of coins to meet total
+    """
+    if total <= 0:
+        return 0
+    coins.sort(reverse=True)
+    num_coins = 0
+    for coin in coins:
+        if total <= 0:
+            break
+        if coin <= total:
+            num_coins += total // coin
+            total = total % coin
+    if total != 0:
+        return -1
+    return num_coins
+    
