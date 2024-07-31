@@ -1,42 +1,30 @@
 #!/usr/bin/python3
-"""
-Module to calculate the perimeter of an island in a grid.
-"""
 
 def island_perimeter(grid):
-    """
-    Calculate the perimeter of the island described in the grid.
-    
-    Args:
-        grid (List[List[int]]): A 2D grid where 1 represents land and 0 represents water.
-    
-    Returns:
-        int: The perimeter of the island.
-    """
+    """Returns the perimeter of the island described in grid"""
     if not grid or not grid[0]:
         return 0
 
-    rows = len(grid)
-    cols = len(grid[0])
+    rows, cols = len(grid), len(grid[0])
     perimeter = 0
+
+    def is_water_or_out_of_bounds(r, c):
+        """Helper function to check if cell is water or out of bounds"""
+        if r < 0 or r >= rows or c < 0 or c >= cols:
+            return True
+        return grid[r][c] == 0
 
     for r in range(rows):
         for c in range(cols):
             if grid[r][c] == 1:
-                # Start with 4 potential sides
-                sides = 4
-                
-                # Check top side
-                if r > 0 and grid[r - 1][c] == 1:
-                    sides -= 1
-                
-                # Check bottom side
-                if r < rows - 1 and grid[r + 1][c] == 1:
-                    sides -= 1
-                
-                # Check left side
-                if c > 0 and grid[r][c - 1] == 1:
-                    sides -= 1
-                
-                # Check right side
-                if c < cols - 1 
+                # Check each side
+                if is_water_or_out_of_bounds(r - 1, c):  # Top
+                    perimeter += 1
+                if is_water_or_out_of_bounds(r + 1, c):  # Bottom
+                    perimeter += 1
+                if is_water_or_out_of_bounds(r, c - 1):  # Left
+                    perimeter += 1
+                if is_water_or_out_of_bounds(r, c + 1):  # Right
+                    perimeter += 1
+
+    return perimeter
