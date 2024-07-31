@@ -1,30 +1,25 @@
 #!/usr/bin/python3
+"""Island perimeter computing module.
+"""
+
 
 def island_perimeter(grid):
-    """Returns the perimeter of the island described in grid"""
-    if not grid or not grid[0]:
-        return 0
-
-    rows, cols = len(grid), len(grid[0])
+    """Computes the perimeter of an island with no lakes.
+    """
     perimeter = 0
-
-    def is_water_or_out_of_bounds(r, c):
-        """Helper function to check if cell is water or out of bounds"""
-        if r < 0 or r >= rows or c < 0 or c >= cols:
-            return True
-        return grid[r][c] == 0
-
-    for r in range(rows):
-        for c in range(cols):
-            if grid[r][c] == 1:
-                # Check each side
-                if is_water_or_out_of_bounds(r - 1, c):  # Top
-                    perimeter += 1
-                if is_water_or_out_of_bounds(r + 1, c):  # Bottom
-                    perimeter += 1
-                if is_water_or_out_of_bounds(r, c - 1):  # Left
-                    perimeter += 1
-                if is_water_or_out_of_bounds(r, c + 1):  # Right
-                    perimeter += 1
-
+    if type(grid) != list:
+        return 0
+    n = len(grid)
+    for i, row in enumerate(grid):
+        m = len(row)
+        for j, cell in enumerate(row):
+            if cell == 0:
+                continue
+            edges = (
+                i == 0 or (len(grid[i - 1]) > j and grid[i - 1][j] == 0),
+                j == m - 1 or (m > j + 1 and row[j + 1] == 0),
+                i == n - 1 or (len(grid[i + 1]) > j and grid[i + 1][j] == 0),
+                j == 0 or row[j - 1] == 0,
+            )
+            perimeter += sum(edges)
     return perimeter
